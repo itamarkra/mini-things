@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <title>ממיר יחידות גמיש</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      direction: rtl;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    .converter {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 450px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    input, select {
+      padding: 8px;
+      margin: 10px 5px;
+      width: 40%;
+      font-size: 16px;
+      vertical-align: middle;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    .result {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #0077cc;
+      min-height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔄 ממיר יחידות גמיש</h1>
+
+  <!-- טמפרטורה -->
+  <div class="converter" id="tempConverter">
+    <h2>🌡️ טמפרטורה</h2>
+    <input id="tempInput" type="number" placeholder="הכנס טמפרטורה" />
+    <br />
+    <label>מ-</label>
+    <select id="tempFrom">
+      <option value="C">°צלזיוס (C)</option>
+      <option value="F">°פרנהייט (F)</option>
+      <option value="K">קלווין (K)</option>
+    </select>
+    <label>ל-</label>
+    <select id="tempTo">
+      <option value="C">°צלזיוס (C)</option>
+      <option value="F">°פרנהייט (F)</option>
+      <option value="K">קלווין (K)</option>
+    </select>
+    <div class="result" id="tempResult"></div>
+  </div>
+
+  <!-- מרחק -->
+  <div class="converter" id="distConverter">
+    <h2>📏 מרחק</h2>
+    <input id="distInput" type="number" placeholder="הכנס מרחק" />
+    <br />
+    <label>מ-</label>
+    <select id="distFrom">
+      <option value="km">קילומטר (km)</option>
+      <option value="mi">מייל (mi)</option>
+      <option value="m">מטר (m)</option>
+      <option value="cm">סנטימטר (cm)</option>
+    </select>
+    <label>ל-</label>
+    <select id="distTo">
+      <option value="km">קילומטר (km)</option>
+      <option value="mi">מייל (mi)</option>
+      <option value="m">מטר (m)</option>
+      <option value="cm">סנטימטר (cm)</option>
+    </select>
+    <div class="result" id="distResult"></div>
+  </div>
+
+  <!-- משקל -->
+  <div class="converter" id="weightConverter">
+    <h2>⚖️ משקל</h2>
+    <input id="weightInput" type="number" placeholder="הכנס משקל" />
+    <br />
+    <label>מ-</label>
+    <select id="weightFrom">
+      <option value="kg">קילוגרם (kg)</option>
+      <option value="lb">פאונד (lb)</option>
+      <option value="g">גרם (g)</option>
+      <option value="oz">אונקיה (oz)</option>
+    </select>
+    <label>ל-</label>
+    <select id="weightTo">
+      <option value="kg">קילוגרם (kg)</option>
+      <option value="lb">פאונד (lb)</option>
+      <option value="g">גרם (g)</option>
+      <option value="oz">אונקיה (oz)</option>
+    </select>
+    <div class="result" id="weightResult"></div>
+  </div>
+
+  <!-- נפח -->
+  <div class="converter" id="volConverter">
+    <h2>🧪 נפח</h2>
+    <input id="volInput" type="number" placeholder="הכנס נפח" />
+    <br />
+    <label>מ-</label>
+    <select id="volFrom">
+      <option value="l">ליטר (L)</option>
+      <option value="gal">גלון (אמריקאי) (gal)</option>
+      <option value="ml">מיליליטר (ml)</option>
+      <option value="floz">אונקיית נוזל (fl oz)</option>
+    </select>
+    <label>ל-</label>
+    <select id="volTo">
+      <option value="l">ליטר (L)</option>
+      <option value="gal">גלון (אמריקאי) (gal)</option>
+      <option value="ml">מיליליטר (ml)</option>
+      <option value="floz">אונקיית נוזל (fl oz)</option>
+    </select>
+    <div class="result" id="volResult"></div>
+  </div>
+
+  <script>
+    function round(num) {
+      return Math.round(num * 100) / 100;
+    }
+
+    // המרת טמפרטורה - פונקציות עזר
+    function cToF(c) { return (c * 9/5) + 32; }
+    function fToC(f) { return (f - 32) * 5/9; }
+    function cToK(c) { return c + 273.15; }
+    function kToC(k) { return k - 273.15; }
+    function fToK(f) { return cToK(fToC(f)); }
+    function kToF(k) { return cToF(kToC(k)); }
+
+    function convertTemp() {
+      const input = parseFloat(document.getElementById('tempInput').value);
+      const from = document.getElementById('tempFrom').value;
+      const to = document.getElementById('tempTo').value;
+      if (isNaN(input)) {
+        document.getElementById('tempResult').innerText = '';
+        return;
+      }
+      let result = input;
+      if (from === to) {
+        // לא משנה כלום
+      } else if (from === 'C' && to === 'F') {
+        result = cToF(input);
+      } else if (from === 'F' && to === 'C') {
+        result = fToC(input);
+      } else if (from === 'C' && to === 'K') {
+        result = cToK(input);
+      } else if (from === 'K' && to === 'C') {
+        result = kToC(input);
+      } else if (from === 'F' && to === 'K') {
+        result = fToK(input);
+      } else if (from === 'K' && to === 'F') {
+        result = kToF(input);
+      }
+      document.getElementById('tempResult').innerText = round(result) + ' °' + to;
+    }
+
+    // המרת מרחק - המרה ראשונית למטר (יחידת ביניים)
+    function distToMeters(value, unit) {
+      switch(unit) {
+        case 'km': return value * 1000;
+        case 'mi': return value * 1609.34;
+        case 'm': return value;
+        case 'cm': return value / 100;
+        default: return NaN;
+      }
+    }
+    function metersToDist(value, unit) {
+      switch(unit) {
+        case 'km': return value / 1000;
+        case 'mi': return value / 1609.34;
+        case 'm': return value;
+        case 'cm': return value * 100;
+        default: return NaN;
+      }
+    }
+    function convertDist() {
+      const input = parseFloat(document.getElementById('distInput').value);
+      const from = document.getElementById('distFrom').value;
+      const to = document.getElementById('distTo').value;
+      if (isNaN(input)) {
+        document.getElementById('distResult').innerText = '';
+        return;
+      }
+      const meters = distToMeters(input, from);
+      const result = metersToDist(meters, to);
+      document.getElementById('distResult').innerText = round(result) + ' ' + to;
+    }
+
+    // המרת משקל - המרה ראשונית לגרם (יחידת ביניים)
+    function weightToGrams(value, unit) {
+      switch(unit) {
+        case 'kg': return value * 1000;
+        case 'lb': return value * 453.592;
+        case 'g': return value;
+        case 'oz': return value * 28.3495;
+        default: return NaN;
+      }
+    }
+    function gramsToWeight(value, unit) {
+      switch(unit) {
+        case 'kg': return value / 1000;
+        case 'lb': return value / 453.592;
+        case 'g': return value;
+        case 'oz': return value / 28.3495;
+        default: return NaN;
+      }
+    }
+    function convertWeight() {
+      const input = parseFloat(document.getElementById('weightInput').value);
+      const from = document.getElementById('weightFrom').value;
+      const to = document.getElementById('weightTo').value;
+      if (isNaN(input)) {
+        document.getElementById('weightResult').innerText = '';
+        return;
+      }
+      const grams = weightToGrams(input, from);
+      const result = gramsToWeight(grams, to);
+      document.getElementById('weightResult').innerText = round(result) + ' ' + to;
+    }
+
+    // המרת נפח - המרה ראשונית לליטר (יחידת ביניים)
+    function volToLiters(value, unit) {
+      switch(unit) {
+        case 'l': return value;
+        case 'gal': return value * 3.78541;
+        case 'ml': return value / 1000;
+        case 'floz': return value * 0.0295735;
+        default: return NaN;
+      }
+    }
+    function litersToVol(value, unit) {
+      switch(unit) {
+        case 'l': return value;
+        case 'gal': return value / 3.78541;
+        case 'ml': return value * 1000;
+        case 'floz': return value / 0.0295735;
+        default: return NaN;
+      }
+    }
+    function convertVol() {
+      const input = parseFloat(document.getElementById('volInput').value);
+      const from = document.getElementById('volFrom').value;
+      const to = document.getElementById('volTo').value;
+      if (isNaN(input)) {
+        document.getElementById('volResult').innerText = '';
+        return;
+      }
+      const liters = volToLiters(input, from);
+      const result = litersToVol(liters, to);
+      document.getElementById('volResult').innerText = round(result) + ' ' + to;
+    }
+
+    // מאזינים לאירועים
+    document.getElementById('tempInput').addEventListener('input', convertTemp);
+    document.getElementById('tempFrom').addEventListener('change', convertTemp);
+    document.getElementById('tempTo').addEventListener('change', convertTemp);
+
+    document.getElementById('distInput').addEventListener('input', convertDist);
+    document.getElementById('distFrom').addEventListener('change', convertDist);
+    document.getElementById('distTo').addEventListener('change', convertDist);
+
+    document.getElementById('weightInput').addEventListener('input', convertWeight);
+    document.getElementById('weightFrom').addEventListener('change', convertWeight);
+    document.getElementById('weightTo').addEventListener('change', convertWeight);
+
+    document.getElementById('volInput').addEventListener('input', convertVol);
+    document.getElementById('volFrom').addEventListener('change', convertVol);
+    document.getElementById('volTo').addEventListener('change', convertVol);
+  </script>
+</body>
+</html>
