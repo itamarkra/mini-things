@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>גלגל מזל</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #222;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    direction: rtl;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+  }
+
+  #wheel {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 8px solid #f9d423;
+    overflow: hidden;
+    box-shadow: 0 0 20px #f9d423aa;
+    transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .segment {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    background: #f9d423;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0% 0%;
+    border: 2px solid #222;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 10px;
+    font-weight: bold;
+    color: #222;
+  }
+
+  #pointer {
+    margin-top: 20px;
+    width: 0; 
+    height: 0; 
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 30px solid #f9d423;
+  }
+
+  button {
+    margin-top: 30px;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    background: #f9d423;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #222;
+    font-weight: bold;
+    box-shadow: 0 0 10px #f9d423aa;
+    transition: background 0.3s;
+  }
+
+  button:hover {
+    background: #f2c029;
+  }
+</style>
+</head>
+<body>
+
+<h1>גלגל מזל 🎡</h1>
+<div id="wheel"></div>
+<div id="pointer"></div>
+<button onclick="spin()">סובב גלגל!</button>
+
+<script>
+  const prizes = [
+    "פרס ראשון 🏆",
+    "פרס שני 🥈",
+    "פרס שלישי 🥉",
+    "עוד הזדמנות 🔄",
+    "מזל טוב! 🎉",
+    "נסה שוב 🤞",
+    "מתנה מפתיעה 🎁",
+    "החופש הבא ✈️"
+  ];
+
+  const wheel = document.getElementById("wheel");
+  const numSegments = prizes.length;
+  const segmentAngle = 360 / numSegments;
+
+  // צור את קטעי הגלגל
+  for (let i = 0; i < numSegments; i++) {
+    const segment = document.createElement("div");
+    segment.classList.add("segment");
+    segment.style.transform = `rotate(${i * segmentAngle}deg) skewY(${90 - segmentAngle}deg)`;
+    segment.style.background = i % 2 === 0 ? "#f9d423" : "#fceabb";
+    segment.textContent = prizes[i];
+    wheel.appendChild(segment);
+  }
+
+  let currentRotation = 0;
+
+  function spin() {
+    // אל תאפשר סיבוב לפני שהסיבוב הקודם הסתיים
+    if (wheel.style.transition) return;
+
+    // כמה סיבובים מלאים + זווית אקראית על הגלגל
+    const spins = Math.floor(Math.random() * 3) + 4; // 4-6 סיבובים
+    const randomAngle = Math.floor(Math.random() * 360);
+    const totalRotation = spins * 360 + randomAngle;
+
+    currentRotation += totalRotation;
+
+    wheel.style.transition = "transform 4s cubic-bezier(0.33, 1, 0.68, 1)";
+    wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+    // אחרי שהגלגל נעצר
+    setTimeout(() => {
+      wheel.style.transition = "";
+      // חישוב הזווית הסופית (0-360)
+      const finalRotation = currentRotation % 360;
+      // הזווית של הפרס היא 360 - finalRotation בגלל הכיוון של הסיבוב
+      const normalizedAngle = 360 - finalRotation;
+
+      // איזה פרס יצא לפי הזווית
+      const index = Math.floor(normalizedAngle / segmentAngle) % numSegments;
+      alert(`יצאת על: ${prizes[index]} 🎉`);
+    }, 4000);
+  }
+</script>
+
+</body>
+</html>
